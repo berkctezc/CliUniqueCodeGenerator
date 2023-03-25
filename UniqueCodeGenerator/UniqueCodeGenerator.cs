@@ -4,12 +4,15 @@ public static class UniqueCodeGenerator
 {
     public static string Generate(string charset, uint length = 8)
     {
+        var distinctCharset = charset.Distinct();
+
         var code = new char[length];
 
         for (var i = 0; i < length; i++)
         {
-            var shuffle = charset.OrderBy(_ => Random.Shared.Next()).ToArray();
-            var randomIndex = Random.Shared.Next(0, shuffle.Length);
+            var shuffle = distinctCharset.OrderBy(_ => RandomNumberGenerator.GetInt32(int.MaxValue)).ToArray();
+
+            var randomIndex = RandomNumberGenerator.GetInt32(0, shuffle.Length);
             code[i] = shuffle[randomIndex];
         }
 
