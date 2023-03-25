@@ -1,19 +1,25 @@
-﻿namespace UniqueCodeGenerator;
+﻿var (charset, length, verbose) = Parser.Default.ParseArguments<Options>(args).Value;
 
-public static class Program
+Stopwatch? sw = null;
+
+if (verbose)
+    sw = Stopwatch.StartNew();
+
+var generatedCode = UniqueCodeGenerator.UniqueCodeGenerator.Generate(charset, length);
+
+Console.WriteLine(generatedCode);
+
+if (sw is not null)
 {
-    public static void Main(string[] args)
-    {
-        var (charset, length) = Parser.Default.ParseArguments<Options>(args).Value;
+    sw.Stop();
 
-        Console.WriteLine("Generating {0} lenght unique code with given charset '{1}'", length.ToString(), charset);
+    Console.WriteLine("Generating {0} lenght unique code with given charset '{1}'", length.ToString(), charset);
 
-        var generatedCode = UniqueCodeGenerator.Generate(charset, length);
+    TextCopy.ClipboardService.SetText(generatedCode);
 
-        Console.WriteLine("Generated code and copied to your clipboard \n{0}\nPress any key to exit", generatedCode);
-        TextCopy.ClipboardService.SetText(generatedCode);
+    Console.WriteLine("Generated code and copied to your clipboard in {0} ms\n{1}\nPress any key to exit", sw.ElapsedMilliseconds.ToString(), generatedCode);
 
-        Console.ReadKey();
-        // BenchmarkRunner.Run<Benchmarks>();
-    }
+    Console.ReadKey();
 }
+
+// BenchmarkDotNet.Running.BenchmarkRunner.Run<Benchmarks>();
